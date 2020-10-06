@@ -19,7 +19,7 @@ get_labels : returns a list of lists that contain the labels of each sentence(I 
 
 Part 2
 
-For feature extraction, I decided to use word embeddings. I first padded the sentences to get them all to the same word length to be able to create the word embeddings. Then, I iterated through all sentences and token ids of each sentence and made them into tensors, which I appended to a list that represents each sentence. After that, I stacked it and appended it to the all_feat list that would contain all sentences. When the iterations were done, I stacked the all_feat list into a tensor of tensors of tensors and returned it. In the end, I called the get_feat function for the three splits and saved the tensors to the GPU.
+For feature extraction, I decided to use token ids. As of now, I decided to make features out of not only the training set but also the test and the development by including the word ids of the words that only appear in the test and development set. I first padded the sentences to get them all to the same word length. Then, I iterated through all sentences and token ids of each sentence and made them into tensors, which I appended to a list that represents each sentence. After that, I stacked it and appended it to the all_feat list that would contain all sentences. When the iterations were done, I stacked the all_feat list into a tensor of tensors of tensors and returned it. In the end, I called the get_feat function for the three splits and saved the tensors to the GPU.
 
 Bonus
 
