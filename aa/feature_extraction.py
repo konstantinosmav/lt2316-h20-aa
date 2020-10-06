@@ -18,30 +18,31 @@ def get_padded_sents(df):
         sentences.append(sentence)
     return padding(sentences)
 
-def embed_feat(df,id2word,embedding_dim):
+def embed_feat(df):
     print("extracting features")    
     sentences = get_padded_sents(df)
     print('done making sentences')
     all_feat = []    
-    embeddings = nn.Embedding((len(id2word)+1), embedding_dim)
+    
     for sent in sentences:
         f_sent = []
         for token_id in sent:
-            # .squeeze() to remove all 1s
-            embed = embeddings(torch.LongTensor([token_id])).squeeze()            
-            f_sent.append(embed)
+            
+            tok_tens = torch.LongTensor([token_id])           
+            f_sent.append(tok_tens)
         all_feat.append(torch.stack(f_sent))
     tensor_feat = torch.stack(all_feat)    
-    return tensor_feat           
+    return tensor_feat               
 
 def extract_features(data:pd.DataFrame,id2word,embedding_dim,device):
     df_train = data.loc[data['split'] == 'train']
     df_test = data.loc[data['split'] == 'test']
     df_dev = data.loc[data['split']=='development']         
     
-    X_train = embed_feat(df_train,id2word,embedding_dim).to(device)
-    X_test = embed_feat(df_test,id2word,embedding_dim).to(device)
-    X_dev = embed_feat(df_dev,id2word,embedding_dim).to(device)
+    X_train = embed_feat(df_train).to(device)
+    X_test = embed_feat(df_test).to(device)
+    X_dev = embed_feat(df_dev).to(device)
     
     return X_train, X_test, X_dev
+
 
