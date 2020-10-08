@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 from keras.preprocessing.sequence import pad_sequences
 
+
+
 def padding(sequence):
 
     padded = pad_sequences(sequence,padding='post',value=0)
@@ -34,11 +36,22 @@ def embed_feat(df):
     tensor_feat = torch.stack(all_feat)    
     return tensor_feat               
 
-def extract_features(data:pd.DataFrame,id2word,embedding_dim,device):
+def extract_features(data:pd.DataFrame,device):
     df_train = data.loc[data['split'] == 'train']
     df_test = data.loc[data['split'] == 'test']
-    df_dev = data.loc[data['split']=='development']         
+    df_dev = data.loc[data['split']=='development']    
     
+    train_tokens = df_train.token_id.unique().tolist()
+    test_tokens = df_test.token_id.unique().tolist()    
+    dev_tokens = df_dev.token_id.unique().tolist() 
+    
+    td_tokens = test_tokens + dev_tokens
+    unk_tokens = [token for token in td_tokens if token not in train_tokens] 
+    
+    
+    df_test.loc[df_test["token_id"].isin(unk_tokens), "token_id"] = -1
+    df_dev.loc[df_dev["token_id"].isin(unk_tokens), "token_id"] = -1
+        
     X_train = embed_feat(df_train).to(device)
     X_test = embed_feat(df_test).to(device)
     X_dev = embed_feat(df_dev).to(device)
